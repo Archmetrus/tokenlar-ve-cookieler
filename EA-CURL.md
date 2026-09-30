@@ -29,7 +29,7 @@ API yolu ve başlıklar, indirilen sayfanın kullandığı [EA JavaScript dosyas
 ## Kullanım
 
 ```bash
-cd /home/ykk/Desktop/codex/PROJE/tokenlar-ve-cookieler
+cd "$(git rev-parse --show-toplevel)"
 python3 ea_account_curl.py --verbose
 ```
 

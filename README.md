@@ -11,7 +11,7 @@
 Python 3.10+ ve curl gerekir. Ek paket veya kurulum yok.
 
 ```bash
-cd /home/ykk/Desktop/codex/PROJE/tokenlar-ve-cookieler
+cd "$(git rev-parse --show-toplevel)"
 python3 server.py
 ```
 
@@ -78,3 +78,7 @@ curl -v http://127.0.0.1:8000/protected \
 Cookie bir saklama/gönderme mekanizmasıdır; bearer token bir yetkilendirme kullanım biçimidir. Burada ikisi de sunucuda tutulan, 15 dakikalık ayrı rastgele oturum değerleri kullanır; JWT uygulanmadı. Cookie tarayıcı tarafından otomatik gönderilir, bearer token `Authorization` başlığıyla açıkça gönderilir. Çıkış yalnızca istekte gönderilen cookie/tokenı iptal eder; diğer girişleri kapatmaz. Sunucu yeniden başlayınca tüm oturumlar kaybolur.
 
 Demo bilgileri `ogrenci / lab123`. İstek gövdeleri, cookie ve Authorization başlıkları öğrenme amacıyla açıkça gösterilir. Cookie yerel HTTP için `HttpOnly; SameSite=Strict` kullanır; gerçek HTTPS uygulamasında `Secure` ve üretime uygun kimlik doğrulama gerekir. Bu uygulama bir üretim sunucusu değildir. [Python http.server](https://docs.python.org/3/library/http.server.html).
+
+## Proje dizini
+
+Depoyu istediğiniz klasöre klonlayıp o dizine girin. `git rev-parse --show-toplevel` kullanılan komutlar klonun içinden çalıştırılır; kullanıcı adı veya sabit bir ana dizin gerekmez.

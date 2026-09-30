@@ -2,20 +2,24 @@
 
 Birden fazla cookieyle çalışmak ve curl ile aynı oturumu kullanmak için [EA-SESSION.md](EA-SESSION.md) yönergelerini takip et. `--cookies-file ea-session.json` kullanıldığında yalnızca JSESSIONID yerine dosyadaki EA cookieleri yüklenir.
 
-Kurulum (Arch Linux):
+Kurulum (proje dizininde):
 
 ```bash
-sudo pacman -Syu python-playwright chromium
+python -m venv .venv
+# Linux/macOS: source .venv/bin/activate
+# Windows PowerShell: .venv\Scripts\Activate.ps1
+python -m pip install playwright
+python -m playwright install chromium
 ```
 
 Çalıştırma:
 
 ```bash
-cd /home/ykk/Desktop/codex/PROJE/tokenlar-ve-cookieler
-/usr/bin/python ea_account_playwright.py
+cd "$(git rev-parse --show-toplevel)"
+python ea_account_playwright.py
 ```
 
-JSESSIONID sorulunca yalnızca değerini yapıştır. Değer ekranda gösterilmez. Script sistem Chromium'unu görünür pencerede açar ve JSESSIONID cookie'sini `myaccount.ea.com` için ekler. Tarayıcı normal şekilde JavaScript, CSS ve sayfanın API isteklerini çalıştırır. [Playwright cookie API](https://playwright.dev/python/docs/api/class-browsercontext#browser-context-add-cookies).
+JSESSIONID sorulunca yalnızca değerini yapıştır. Değer ekranda gösterilmez. Script varsayılan Playwright Chromium'unu görünür pencerede açar ve JSESSIONID cookie'sini `myaccount.ea.com` için ekler. Tarayıcı normal şekilde JavaScript, CSS ve sayfanın API isteklerini çalıştırır. [Playwright cookie API](https://playwright.dev/python/docs/api/class-browsercontext#browser-context-add-cookies).
 
 1. Açılan pencerede sayfanın görünmesini bekle.
 2. Terminalde Enter bas: ekran görüntüsü ve JavaScript sonrası HTML kaydedilir.
@@ -26,7 +30,7 @@ Kaydetmeden çıkmak için ilk istemde `q` yaz. Pencereyi erken kapattıysan ter
 Parametreyle de çalıştırabilirsin:
 
 ```bash
-/usr/bin/python ea_account_playwright.py --jsessionid 'KENDI_JSESSIONID_DEGERIN'
+python ea_account_playwright.py --jsessionid 'KENDI_JSESSIONID_DEGERIN'
 ```
 
 Bu yöntem değeri terminal geçmişine ve süreç argümanlarına yazabilir; varsayılan gizli giriş yöntemini kullanabilirsin.
@@ -34,7 +38,7 @@ Bu yöntem değeri terminal geçmişine ve süreç argümanlarına yazabilir; va
 JSESSIONID ile giriş ekranına yönlendirilirsen normal giriş seçeneği:
 
 ```bash
-/usr/bin/python ea_account_playwright.py --manual-login
+python ea_account_playwright.py --manual-login
 ```
 
 Bu durumda açılan tarayıcıda kendi hesabına giriş yap; script parola veya doğrulama kodu istemez. Bir JSESSIONID her zaman tam giriş oturumunu taşımayabilir. Script oturumun geçerli olduğunu veya tarayıcıda tam olarak aynı ekranın oluşacağını varsaymaz.
@@ -55,8 +59,10 @@ Script kendi başına hesap ayarlarını değiştiren bir düğmeye tıklamaz. T
 Playwright'ın kendi Chromium sürümünü indirip kullanabilirsin:
 
 ```bash
-/usr/bin/python -m playwright install chromium
-/usr/bin/python ea_account_playwright.py --browser playwright
+python -m playwright install chromium
+python ea_account_playwright.py --browser playwright
 ```
 
 Playwright, kendi tarayıcı sürümleriyle çalışacak şekilde geliştirilir; başka executable seçimi uyumluluğu etkileyebilir. [Tarayıcı başlatma belgeleri](https://playwright.dev/python/docs/api/class-browsertype#browser-type-launch).
+
+Sistem tarayıcısı için `--browser chromium` veya `--browser /tarayicinin/tam/yolu` kullanın. `CHROME_PATH` da kullanılabilir. Aynı sanal ortamın Python komutuyla kurup çalıştırın.

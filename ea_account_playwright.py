@@ -26,7 +26,7 @@ async def run(args, session, session_data):
     try:
         from playwright.async_api import async_playwright, Error, TimeoutError as PlaywrightTimeout
     except ImportError:
-        print('Playwright bu Python ortamında bulunamadı. Sistem Python ile çalıştır: /usr/bin/python ea_account_playwright.py')
+        print('Playwright bu Python ortamında bulunamadı. Bu ortamda kur: python -m pip install playwright')
         return 1
 
     async with async_playwright() as playwright:
@@ -125,7 +125,7 @@ def main():
     parser.add_argument('--jsessionid', '--session-id', help='Yalnızca JSESSIONID değeri; verilmezse gizli girişten sorulur.')
     parser.add_argument('--manual-login', action='store_true', help='Cookie ekleme; açılan tarayıcıda normal giriş yap.')
     parser.add_argument('--cookies-file', type=Path, help='Curl ile ortak kullanılan yerel EA cookie JSON dosyası.')
-    parser.add_argument('--browser', default='/usr/bin/chromium', help='Chromium yolu veya Playwright tarayıcısı için playwright.')
+    parser.add_argument('--browser', default=os.environ.get('CHROME_PATH', 'playwright'), help='Chrome/Chromium yolu ya da komutu; varsayılan Playwright Chromium (CHROME_PATH ile değiştirilebilir).')
     args = parser.parse_args()
     if sum(bool(value) for value in (args.manual_login, args.jsessionid, args.cookies_file)) > 1:
         parser.error('--manual-login, --jsessionid ve --cookies-file seçeneklerinden yalnızca birini kullan.')

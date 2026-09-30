@@ -7,8 +7,8 @@ Scriptler ve oturumlu istekler geliştirme sırasında çalıştırılmadı. Bur
 Normal tarayıcıda hesabına giriş yap. F12 → Network → Fetch/XHR altında `GET /am/data/1/account-information` isteğini seç. Response içindeki hesap bilgisi, çalışan isteği bulduğunu doğrular.
 
 ```bash
-cd /home/ykk/Desktop/codex/PROJE/tokenlar-ve-cookieler
-/usr/bin/python ea_session_setup.py
+cd "$(git rev-parse --show-toplevel)"
+python ea_session_setup.py
 ```
 
 Program aşağıdaki **Request Headers** değerlerini sırayla sorar:
@@ -28,7 +28,7 @@ Cookie ve CSRF girişleri ekranda görünmez. Sonuç `ea-session.json` dosyasın
 Hesap verisini al:
 
 ```bash
-/usr/bin/python ea_account_curl.py --cookies-file ea-session.json --api --verbose
+python ea_account_curl.py --cookies-file ea-session.json --api --verbose
 ```
 
 Bu komut dosyadaki cookie, CSRF, User-Agent, Sec-CH-UA ve dil bilgisiyle hesap API'sine tek GET gönderir. Cookie ve CSRF değerleri terminalde gizlenir. Cevap `ea-output-....json` dosyasına kaydedilir. JSON içinde `result.eaid` ve maskelenmiş e-posta gibi alanların gelmesi hesap verisinin alındığını gösterir; yalnızca HTTP 200'e bakma.
@@ -36,13 +36,13 @@ Bu komut dosyadaki cookie, CSRF, User-Agent, Sec-CH-UA ve dil bilgisiyle hesap A
 İlk HTML cevabını önceki yöntemle almak için:
 
 ```bash
-/usr/bin/python ea_account_curl.py --cookies-file ea-session.json --verbose
+python ea_account_curl.py --cookies-file ea-session.json --verbose
 ```
 
 CSRF'yi HTML'den yeniden almak istersen:
 
 ```bash
-/usr/bin/python ea_account_curl.py --cookies-file ea-session.json --api --bootstrap --verbose
+python ea_account_curl.py --cookies-file ea-session.json --api --bootstrap --verbose
 ```
 
 İptal olmuş oturumun CSRF'sini yenilemek oturumu yeniden geçerli yapmaz. Yönlendirmeler takip edilmez; sınırsız tekrar yapılmaz. Curl geçici cookie deposunu günceller; asıl JSON dosyan değiştirilmez.
@@ -50,7 +50,7 @@ CSRF'yi HTML'den yeniden almak istersen:
 ## 3. Playwright denemesi
 
 ```bash
-/usr/bin/python ea_account_playwright.py --cookies-file ea-session.json
+python ea_account_playwright.py --cookies-file ea-session.json
 ```
 
 Chromium penceresi açılır. Cookie kayıtları yüklenir; dosyada varsa User-Agent uygulanır. CSS, JavaScript ve sayfanın API istekleri normal tarayıcı akışıyla çalışır. CSRF başlığını sayfanın kendi JavaScript'i HTML'den üretir; dosyadaki CSRF değeri bütün tarayıcı isteklerine zorla eklenmez. Sec-CH-UA ve Fetch Metadata başlıklarını tarayıcı yönetir.
