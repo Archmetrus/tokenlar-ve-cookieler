@@ -1,0 +1,17 @@
+{
+  "cookies": [
+    {
+      "name": "JSESSIONID",
+      "value": "KENDI_YENI_COOKIE_DEGERIN",
+      "domain": "myaccount.ea.com",
+      "path": "/am",
+      "secure": true,
+      "httpOnly": true,
+      "expires": -1
+    }
+  ],
+  "csrfToken": "AYNI_OTURUMUN_X_CSRF_TOKEN_DEGERI",
+  "csrfHeaderName": "X-CSRF-TOKEN",
+  "userAgent": "TARAYICININ_USER_AGENT_DEGERI",
+  "acceptLanguage": "tr-TR,tr;q=0.9"
+}

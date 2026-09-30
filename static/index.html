@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="tr">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Tokenlar ve cookieler | Yerel laboratuvar</title><link rel="stylesheet" href="/style.css"><script src="/app.js" defer></script></head>
+<body>
+<header><div><span class="mark">{ }</span><h1>Tokenlar ve cookieler</h1></div><span id="connection" role="status">Canlı bağlantı kuruluyor…</span></header>
+<main>
+<aside>
+<h2>İsteği gönder. Kararı izle.</h2>
+<p>Başlık filtresini curl ile aşmayı ve oturum doğrulamasının farkını kendi sunucunda incele.</p>
+<p><a href="/jwt-cookie.html">JWT ve cookie: animasyonlu anlatımı aç</a></p>
+<p><a href="/scraping-user-agent.html">Scraping ve User-Agent: animasyonlu anlatımı aç</a></p>
+<section><h3>1. İsteğin içi</h3><p>Tarayıcıdan gelen GET isteğinin başlıklarını ve gövdesini gör.</p><div class="actions"><button id="echo">Tarayıcı GET gönder</button><a href="/echo" target="_blank" rel="noopener">JSON aç</a></div></section>
+<section><h3>2. Sunucunun koruması</h3><label for="mode">Koruma modu</label><select id="mode"><option value="open">Açık — tüm istekler</option><option value="headers" selected>Başlık — User-Agent + Sec-CH-UA</option><option value="session">Oturum — başlık + cookie / token</option></select><p id="modeHelp"></p><button id="browser">Tarayıcıyla korunan adresi çağır</button></section>
+<section><h3>3. Curl ile dene</h3><label for="scenario">Deney</label><select id="scenario" aria-describedby="scenarioHelp scenarioExpected"><option value="suite">Altı deneyi sırayla çalıştır</option><option value="plain">Normal curl</option><option value="ua">Sadece tarayıcı User-Agent</option><option value="spoof">User-Agent + Sec-CH-UA taklidi</option><option value="fake">Taklit başlık + sahte token</option><option value="cookie">Giriş yap → cookie kullan</option><option value="bearer">Giriş yap → bearer token kullan</option></select><div class="experiment-help" aria-live="polite"><h4 id="scenarioTitle"></h4><p id="scenarioHelp"></p><strong>Seçili korumada beklenen sonuç</strong><p id="scenarioExpected"></p></div><button id="run" class="primary">Curl deneyini başlat</button><p>Yalnızca 127.0.0.1 hedeflenir. Her deney sonlu sayıda istek gönderir.</p></section>
+<section><h3>Tarayıcı oturumu</h3><p>Demo hesap: <code>ogrenci / lab123</code></p><div class="actions"><button id="login">Giriş yap</button><button id="logout">Çıkış yap</button></div></section>
+</aside>
+<article>
+<div class="console-head"><div><h2>Canlı akış</h2><p>İstek → sunucu kararı → curl cevabı</p></div><button id="clear">Ekranı temizle</button></div>
+<div id="notice" role="status">Bir istek veya deney başlat. Çıktılar burada görünecek.</div>
+<div class="legend"><span class="key-server">Sunucunun gördüğü istek</span><span class="key-command">Çalıştırılan komut</span><span class="key-trace">curl bağlantı ve başlıkları</span><span class="key-response">Sunucudan dönen cevap</span><label><input type="checkbox" id="follow" checked> Akışı takip et</label></div>
+<div id="stream" tabindex="0" aria-label="Canlı istek ve curl çıktıları"><p id="empty">Henüz çıktı yok.</p></div>
+<footer>Başlıklar kimlik kanıtı değildir. Demo çıktıları cookie, token ve giriş gövdesini gösterir; yalnızca bu laboratuvarın bilgilerini kullan.</footer>
+</article>
+</main>
+</body></html>

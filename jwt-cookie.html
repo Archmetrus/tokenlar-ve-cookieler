@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JWT ve cookie • Etkileşimli ders</title>
+<style>
+:root{font-family:"Trebuchet MS",Verdana,sans-serif;color:#202431;background:#eef0f5;--purple:#5133a5;--blue:#165eaa;--orange:#915600}*{box-sizing:border-box}body{margin:0}header{padding:20px max(22px,calc((100vw - 1100px)/2));background:#fff;border-bottom:3px solid var(--purple);display:flex;justify-content:space-between;align-items:center;gap:20px}a{color:#493095}main{max-width:1100px;padding:35px 22px 60px;margin:auto}h1{font-size:clamp(34px,6vw,58px);letter-spacing:-2px;line-height:1.06;margin:14px 0 22px}h2{font-size:25px;margin:0 0 18px}h3{font-size:19px;margin:0 0 10px}p,li{line-height:1.65}p{max-width:78ch}section{margin-top:32px;padding:26px;background:#fff;border:1px solid #bcc3d1;border-radius:9px}.lead{font-size:19px}.pair{display:grid;grid-template-columns:1fr 1fr;gap:22px}.concept{padding:20px;border-left:5px solid var(--blue);background:#eaf3ff}.concept.jwt{border-color:var(--purple);background:#f0eaff}.concept p{margin-bottom:0}.note{padding:13px 17px;background:#fff0bb;border-left:4px solid #a67600;color:#43320b}.controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:18px 0}button,select{font:inherit;padding:10px 13px;border:1px solid #9499ab;border-radius:5px;color:#202431;background:white}button{cursor:pointer}button:hover{background:#e9e2ff}button.primary{background:var(--purple);color:white;border-color:var(--purple)}button:disabled{opacity:.6;cursor:default}label{line-height:1.6}input[type=range]{width:100%;accent-color:var(--purple);cursor:pointer}input[type=checkbox]{accent-color:var(--purple)}.flow{display:grid;grid-template-columns:1fr 100px 1fr;gap:14px;align-items:center;margin:22px 0}.node{padding:22px;background:#eaf3ff;border:2px solid #2762a5;min-height:135px}.node.server{background:#f0eaff;border-color:var(--purple)}.node p{font-size:14px;margin-bottom:0}.rail{height:4px;position:relative;background:#9da6bb}.rail:after{content:'›';position:absolute;right:-4px;top:-20px;font-size:30px;color:#485266}.packet{width:17px;height:17px;position:absolute;top:-7px;left:0;background:#ffbd42;border:2px solid #593d08;border-radius:3px}.flow.animate .packet{animation:travel 1.1s ease-in-out}.flow.reverse .packet{animation-direction:reverse}@keyframes travel{from{left:0}to{left:calc(100% - 17px)}}.stepper{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:15px 0}.stepper button{font-size:14px}.stepper .active{background:var(--purple);color:white;border-color:var(--purple)}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:13px/1.7 "DejaVu Sans Mono",Consolas,monospace;background:#202431;color:#fff;padding:18px;border-radius:5px;margin:16px 0}#stepText{min-height:55px}.sliders{display:grid;grid-template-columns:1fr 1fr;gap:28px}.result{padding:18px;margin-top:20px;border-left:5px solid #24835e;background:#e3f6ed}.result.bad{border-color:#b0233d;background:#ffedf0;color:#711b2c}.result strong{font-size:18px}.result p{margin-bottom:0}.bar{height:10px;background:#cbd0db;border-radius:4px;overflow:hidden;margin:15px 0}.bar span{display:block;background:#5133a5;height:100%;width:100%;transition:width .2s}table{border-collapse:collapse;width:100%;font-size:14px}th,td{padding:14px;text-align:left;border-bottom:1px solid #c4cad6;vertical-align:top}th{background:#ece8f8}td:first-child{font-weight:bold}ul{padding-left:20px}li{margin:10px 0}.pros h3{color:#146441}.cons h3{color:#93283c}.table-wrap{overflow:auto}footer{font-size:13px;line-height:1.7;margin-top:24px}footer a{margin-right:15px}:focus-visible{outline:3px solid #b47900;outline-offset:4px}.small{font-size:13px;color:#50596c}code{font-family:Consolas,monospace}#timelineLabel{font-weight:bold;display:block;margin-top:10px}@media(max-width:680px){.pair,.sliders{grid-template-columns:1fr}section{padding:18px}.flow{grid-template-columns:1fr 45px 1fr;gap:8px}.node{padding:12px;min-height:170px}.stepper{grid-template-columns:1fr 1fr}header{align-items:flex-start;font-size:14px}.controls select{width:100%}}@media(prefers-reduced-motion:reduce){.flow.animate .packet{animation:none}.bar span{transition:none}}
+</style>
+</head>
+<body>
+<header><strong>Tokenlar ve cookieler / Görsel ders</strong><a href="/">Deney paneline dön</a></header>
+<main>
+<h1>JWT ne taşır?<br>Cookie nasıl taşır?</h1>
+<p class="lead"><strong>JWT bir veri formatıdır. Cookie, tarayıcının veri saklama ve HTTP isteğinde gönderme mekanizmasıdır.</strong> Bir JWT cookie içine konabilir. Bir cookie yalnızca rastgele oturum kimliği de taşıyabilir.</p>
+<div class="pair">
+<div class="concept jwt"><h2>JWT: içindeki belge</h2><p>Kullanıcı ve süre gibi alanlar taşır. Yaygın imzalı biçimi üç parçadır: <code>header.payload.signature</code>. Sunucu imzayı ve ilgili alanları doğrular. İmzalı JWT'nin içeriği okunabilir; imza şifreleme sağlamaz. Şifreli JWT için ayrı JWE biçimi vardır. <a href="https://www.rfc-editor.org/rfc/rfc7519">RFC 7519</a></p></div>
+<div class="concept"><h2>Cookie: taşıma yöntemi</h2><p>Sunucu <code>Set-Cookie</code> gönderir. Tarayıcı cookieyi saklar ve uygun isteklere <code>Cookie</code> başlığıyla ekler. Değer bir oturum kimliği veya JWT olabilir. <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Cookies">MDN</a></p></div>
+</div>
+<section>
+<h2>1. Girişten sonraki isteğe kadar izle</h2>
+<label for="architecture">Hangi yapıyı inceleyelim?</label>
+<div class="controls"><select id="architecture"><option value="session">Oturum kimliği + cookie</option><option value="jwtCookie">JWT + cookie</option><option value="jwtBearer">JWT + Authorization: Bearer</option></select><button id="play" class="primary">Akışı oynat</button></div>
+<div class="flow" id="flow"><div class="node"><h3>Tarayıcı / istemci</h3><p id="clientText"></p></div><div class="rail"><span class="packet"></span></div><div class="node server"><h3>Sunucu</h3><p id="serverText"></p></div></div>
+<div class="stepper" id="steps"><button data-step="0">1. Giriş</button><button data-step="1">2. Cevap</button><button data-step="2">3. Sonraki istek</button><button data-step="3">4. Doğrulama</button></div>
+<label id="stepLabel" for="stepSlider">Adım 1 / 4</label><input id="stepSlider" type="range" min="0" max="3" value="0" step="1">
+<p id="stepText" aria-live="polite"></p><pre id="wire"></pre>
+<p class="small">Bu bir anlatım animasyonudur; gerçek giriş veya ağ isteği yapmaz. Örnek JWT değeri kısaltılmıştır.</p>
+</section>
+<section>
+<h2>2. Süre ve çıkış davranışını değiştir</h2>
+<p>Bu modelde oturum kimliği sunucudaki kayda bakar. JWT ise imza ve süreyle yerel doğrulanır. <strong>Çıkıştan önce alınmış bir kopyayı</strong> tekrar gönderen istemciyi incele.</p>
+<div class="sliders"><div><label for="lifetime">Verilen geçerlilik süresi: <strong id="lifeValue">15 dakika</strong></label><input type="range" id="lifetime" min="1" max="60" value="15"></div><div><label for="elapsed">Girişten beri geçen süre: <strong id="timeValue">5 dakika</strong></label><input type="range" id="elapsed" min="0" max="90" value="5"></div></div>
+<div class="controls"><button id="logoutSim">5. dakikada çıkış yap</button><button id="resetSim">Senaryoyu sıfırla</button><label><input id="denylist" type="checkbox"> JWT için sunucuda iptal listesi kontrolü ekle</label></div>
+<span id="timelineLabel"></span><div class="bar"><span id="remaining"></span></div>
+<div class="pair"><div class="result" id="sessionResult" role="status"></div><div class="result" id="jwtResult" role="status"></div></div>
+<p class="note">Cookieyi cihazdan silmek, başka yerdeki JWT kopyasını iptal etmez. İptal listesi veya oturum sürümü kontrolü eklenebilir; bu durumda sunucuda durum tutulur. <a href="https://cheatsheetseries.owasp.org/cheatsheets/JSON_Web_Token_Cheat_Sheet.html">OWASP</a></p>
+<p class="small">Süreyi ve zamanı ileri/geri kaydırmak bir simülasyondur. Çıkışın gerçekleştiği dakika sabit kalır; gerçek saati veya laboratuvar oturumlarını değiştirmez.</p>
+</section>
+<section>
+<h2>3. JWT avantajları ve eksileri</h2>
+<div class="pair"><div class="pros"><h3>Avantajları</h3><ul><li><strong>Yerel doğrulama:</strong> uygun tasarımda her istekte ortak oturum deposuna sorgu gerekmez.</li><li><strong>Servisler arasında kullanım:</strong> güven ilişkisi kurulan servisler, asimetrik imzayı açık anahtarla doğrulayabilir.</li><li><strong>Standart alanlar:</strong> <code>sub</code> kullanıcıyı, <code>exp</code> bitişi, <code>iss</code> üreticiyi, <code>aud</code> hedefi ifade eder. <a href="https://www.rfc-editor.org/rfc/rfc7519">RFC 7519</a></li></ul></div>
+<div class="cons"><h3>Eksileri</h3><ul><li><strong>İptal ve güncellik:</strong> saf yerel doğrulamada çalınan token veya eski rol bilgisi süre dolana kadar geçerli kalabilir.</li><li><strong>Daha çok veri:</strong> alanlar ve imza genellikle kısa oturum kimliğinden daha büyüktür; her istekte taşınır.</li><li><strong>Hata payı:</strong> algoritma, anahtar, üretici, hedef ve süre kontrolleri dikkatle yapılmalıdır. <a href="https://cheatsheetseries.owasp.org/cheatsheets/JSON_Web_Token_Cheat_Sheet.html">OWASP</a></li></ul></div></div>
+<p class="note">JWT otomatik olarak daha güvenli veya daha hızlı değildir. Oturum sorgusunun maliyeti, imza doğrulama maliyeti ve iptal gereksinimi uygulamaya bağlıdır.</p>
+</section>
+<section>
+<h2>4. Yan yana karşılaştır</h2><div class="table-wrap"><table><thead><tr><th>Özellik</th><th>Oturum kimliği + cookie</th><th>İmzalı JWT + cookie veya bearer</th></tr></thead><tbody>
+<tr><td>Kullanıcı bilgisi nerede?</td><td>Sunucudaki oturum kaydında.</td><td>Token alanlarında bulunabilir.</td></tr>
+<tr><td>İstekte ne gönderilir?</td><td>Cookie başlığında rastgele kimlik.</td><td>Cookie başlığında veya Authorization başlığında JWT.</td></tr>
+<tr><td>Doğrulama</td><td>Oturum kaydı bulunur; geçerliliği kontrol edilir.</td><td>İmza, süre, üretici ve hedef gibi kontroller yapılır.</td></tr>
+<tr><td>Çıkış</td><td>Sunucu oturumu iptal edebilir.</td><td>Erken iptal için ek tasarım gerekir.</td></tr>
+<tr><td>Cookie özellikleri</td><td colspan="2">Cookie kullanılıyorsa HttpOnly JavaScript'in değeri okumasını engeller; Secure HTTPS üzerinden gönderimi sınırlar; SameSite siteler arası gönderimi kısıtlar. JWT de cookie içindeyse bu özelliklerden yararlanabilir. <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Cookies">MDN</a></td></tr>
+</tbody></table></div>
+<p>Cookie ile otomatik gönderimde CSRF savunması gerekir. JavaScript'in erişebildiği token saklama alanları XSS ile okunabilir. HttpOnly, XSS'i tamamen çözmez. Kısa ömür, HTTPS ve doğru doğrulama birlikte düşünülmelidir. <a href="https://cheatsheetseries.owasp.org/cheatsheets/JSON_Web_Token_Cheat_Sheet.html">OWASP</a></p>
+</section>
+<section><h2>Bu projedeki token hangisi?</h2><p>Laboratuvarın ürettiği <code>access_token</code> rastgele bir değerdir; <strong>JWT değildir.</strong> Sunucu hem cookieyi hem bearer tokenı bellekteki oturum kayıtlarından doğrular. “Bearer”, tokenı başlıkla kullanma biçimini ifade eder; bir bearer token JWT olabilir veya rastgele bir değer olabilir.</p></section>
+<footer>Kaynaklar: <a href="https://www.rfc-editor.org/rfc/rfc7519">JWT standardı</a><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Cookies">MDN cookie rehberi</a><a href="https://cheatsheetseries.owasp.org/cheatsheets/JSON_Web_Token_Cheat_Sheet.html">OWASP JWT rehberi</a><br>Sayfa dış bağımlılık kullanmaz; dosyayı doğrudan tarayıcıda da açabilirsin.</footer>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+const models = {
+ session: [
+  ['Kullanıcı adı ve parola gönderir.','Kimlik bilgilerini kontrol eder.','İstemci giriş için POST gönderir.','POST /login\n{"username":"ogrenci","password":"lab123"}'],
+  ['Oturum cookie değerini saklar.','Rastgele kimlik üretir; kullanıcıyı oturum deposuna kaydeder.','Sunucu kaydı: s_42 → ogrenci. Cookie yalnızca s_42 kimliğini taşır.','Set-Cookie: session=s_42; HttpOnly; Secure; SameSite=Lax'],
+  ['Uygun isteğe cookieyi otomatik ekler.','Cookie içindeki oturum kimliğini alır.','Tarayıcı eşleşen alan adı, yol ve cookie kurallarına göre değeri gönderir.','GET /protected\nCookie: session=s_42'],
+  ['Sunucunun cevabını alır.','s_42 kaydını bulur, süre ve iptal durumuna bakar.','Kimliğin kendisi kullanıcı bilgisini içermez. Kayıt yoksa erişim reddedilir.','Oturum deposu: s_42 → {user: "ogrenci", active: true}\nSonuç: HTTP 200']
+ ],
+ jwtCookie: [
+  ['Kullanıcı adı ve parola gönderir.','Kimlik bilgilerini kontrol eder.','Giriş isteği bu yapıda da sunucuya gönderilir.','POST /login\n{"username":"ogrenci","password":"lab123"}'],
+  ['JWT değerini cookie olarak saklar.','Alanları oluşturur ve JWT imzasını üretir.','JWT içeriktir; cookie onun saklanma ve gönderilme yoludur.','Set-Cookie: access=eyJ…eyJ…imza; HttpOnly; Secure; SameSite=Lax'],
+  ['Uygun isteğe JWT cookieyi otomatik ekler.','Cookie içinden JWT değerini çıkarır.','Bu yapıda tokenı göndermek için JavaScript cookie değerini okumaz.','GET /protected\nCookie: access=eyJ…eyJ…imza'],
+  ['Doğrulama sonucunu alır.','İmzayı ve ilgili alanları kontrol eder.','Örnek modelde kullanıcı bilgisi token içindedir. İptal kontrolü eklenmediyse oturum kaydı sorgulanmaz.','JWT alanları: {sub: "ogrenci", exp: "bitiş zamanı"}\nİmza ve ilgili alanlar geçerli → HTTP 200']
+ ],
+ jwtBearer: [
+  ['Kullanıcı adı ve parola gönderir.','Kimlik bilgilerini kontrol eder.','Giriş isteği gönderilir. Bearer kelimesi henüz tokenın biçimini belirlemez.','POST /login\n{"username":"ogrenci","password":"lab123"}'],
+  ['Uygulama cevap içindeki tokenı alır.','İmzalı JWT değerini JSON cevabında döndürür.','Bu örnekte token uygulama belleğinde tutulur; sayfa yenilenince kaybolabilir.','HTTP 200\n{"access_token":"eyJ…eyJ…imza", "token_type":"Bearer"}'],
+  ['Uygulama tokenı Authorization başlığına ekler.','Bearer başlığından JWT değerini çıkarır.','Tarayıcı bu başlığı cookie gibi otomatik eklemez; uygulama kodu ayarlar.','GET /protected\nAuthorization: Bearer eyJ…eyJ…imza'],
+  ['Doğrulama sonucunu alır.','İmzayı ve ilgili alanları kontrol eder.','Taşıma biçimi değişse de JWT doğrulama gereksinimi aynıdır.','İmza + exp + iss + aud kontrolleri\nİlgili kontroller geçerli → HTTP 200']
+ ]
+};
+let step = 0, timer = null, logoutAt = null;
+function stop() { clearInterval(timer); timer = null; $('play').textContent = 'Akışı oynat'; }
+function renderFlow(animate = true) {
+ const data = models[$('architecture').value][step];
+ $('clientText').textContent = data[0]; $('serverText').textContent = data[1];
+ $('stepText').textContent = data[2]; $('wire').textContent = data[3];
+ $('stepSlider').value = step; $('stepLabel').textContent = `Adım ${step + 1} / 4`;
+ document.querySelectorAll('[data-step]').forEach(button => {
+  button.classList.toggle('active', Number(button.dataset.step) === step);
+  button.setAttribute('aria-pressed', String(Number(button.dataset.step) === step));
+ });
+ $('flow').classList.remove('animate', 'reverse');
+ if (animate) { void $('flow').offsetWidth; $('flow').classList.toggle('reverse', step === 1 || step === 3); $('flow').classList.add('animate'); }
+}
+$('architecture').addEventListener('change', () => { stop(); step = 0; renderFlow(); });
+$('stepSlider').addEventListener('input', event => { stop(); step = Number(event.target.value); renderFlow(); });
+document.querySelectorAll('[data-step]').forEach(button => button.addEventListener('click', () => { stop(); step = Number(button.dataset.step); renderFlow(); }));
+$('play').addEventListener('click', () => {
+ if (timer) { stop(); return; }
+ step = 0; renderFlow(); $('play').textContent = 'Animasyonu durdur';
+ timer = setInterval(() => { step++; renderFlow(); if (step === 3) stop(); }, 1700);
+});
+function result(id, allowed, message) {
+ const box = $(id); box.classList.toggle('bad', !allowed); box.replaceChildren();
+ const title = document.createElement('strong'); title.textContent = `${id === 'sessionResult' ? 'Oturum kimliği' : 'JWT'}: ${allowed ? '200 • kabul' : '401 • ret'}`;
+ const p = document.createElement('p'); p.textContent = message; box.append(title, p);
+}
+function renderTime() {
+ const life = Number($('lifetime').value), elapsed = Number($('elapsed').value);
+ const expired = elapsed >= life, loggedOut = logoutAt !== null && elapsed >= logoutAt;
+ const revokedJWT = loggedOut && $('denylist').checked;
+ $('lifeValue').textContent = `${life} dakika`; $('timeValue').textContent = `${elapsed} dakika`;
+ $('logoutSim').textContent = logoutAt === null ? `${elapsed}. dakikada çıkış yap` : `Çıkış zamanı: ${logoutAt}. dakika`;
+ $('logoutSim').disabled = logoutAt !== null;
+ $('remaining').style.width = `${Math.max(0, 100 * (life - elapsed) / life)}%`;
+ $('timelineLabel').textContent = expired ? 'Geçerlilik süresi doldu.' : `Süre dolmasına ${life - elapsed} dakika var.`;
+ result('sessionResult', !expired && !loggedOut, expired ? 'Sunucudaki oturumun süresi doldu.' : loggedOut ? 'Çıkış sırasında sunucudaki kayıt iptal edildi. Eski kimlik artık kullanılamaz.' : 'Sunucudaki oturum kaydı hâlâ geçerli.');
+ result('jwtResult', !expired && !revokedJWT, expired ? 'exp süresi doldu; doğru imza tek başına yeterli değil.' : revokedJWT ? 'Süre devam etse de sunucu iptal listesinde tokenı buldu.' : loggedOut ? 'Çıkış yapıldı ama iptal kontrolü yok. Önceden alınmış JWT kopyası süre dolana kadar kabul edilir.' : 'İmza ve süre geçerli kabul ediliyor; iptal edilmiş bir kayıt yok.');
+}
+['lifetime','elapsed','denylist'].forEach(id => $(id).addEventListener('input', renderTime));
+$('logoutSim').addEventListener('click', () => { logoutAt = Number($('elapsed').value); renderTime(); });
+$('resetSim').addEventListener('click', () => { logoutAt = null; $('lifetime').value = 15; $('elapsed').value = 5; $('denylist').checked = false; renderTime(); });
+renderFlow(false); renderTime();
+</script>
+</body>
+</html>

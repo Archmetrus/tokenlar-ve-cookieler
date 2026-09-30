@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Scraping ve User-Agent • Etkileşimli ders</title>
+<style>
+:root{font-family:"Trebuchet MS",Verdana,sans-serif;background:#eff1f6;color:#202431;--blue:#165eaa;--purple:#5133a5}*{box-sizing:border-box}body{margin:0}header{background:#fff;border-bottom:3px solid var(--blue);padding:20px max(22px,calc((100vw - 1100px)/2));display:flex;justify-content:space-between;gap:16px}a{color:#165eaa}main{max-width:1100px;margin:auto;padding:36px 22px 60px}h1{font-size:clamp(34px,6vw,58px);line-height:1.08;letter-spacing:-2px;margin:10px 0 20px}h2{font-size:25px;margin:0 0 18px}h3{font-size:18px;margin:0 0 12px}p,li{line-height:1.65}p{max-width:78ch}.lead{font-size:19px}section{margin-top:30px;background:#fff;border:1px solid #bdc4d2;border-radius:9px;padding:26px}.pair{display:grid;grid-template-columns:1fr 1fr;gap:24px}.concept{padding:20px;border-left:5px solid var(--blue);background:#eaf3ff}.concept:last-child{background:#f1eaff;border-color:var(--purple)}.note{padding:15px 18px;background:#fff0ba;border-left:4px solid #9b7100;color:#493600}button,select{font:inherit;padding:10px 13px;border:1px solid #969eae;border-radius:5px;color:#202431;background:#fff}button{cursor:pointer}button:hover{background:#e3eaff}button.primary{background:#165eaa;color:#fff;border-color:#165eaa}label{display:block;line-height:1.6;margin-bottom:8px}select{width:100%;margin:0 0 16px}input[type=range]{width:100%;accent-color:var(--blue)}input[type=checkbox]{accent-color:var(--purple)}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#202431;color:#fff;padding:18px;font:13px/1.7 "DejaVu Sans Mono",Consolas,monospace;border-radius:5px}code{font-family:Consolas,monospace}.parts{display:flex;flex-wrap:wrap;gap:10px}.parts button{font-family:Consolas,monospace;font-size:13px;background:#e7edff;border-color:#778ac7}.parts button.active{background:#165eaa;color:#fff}#partText{min-height:75px;padding:16px;background:#f1f4fb}.flow{display:grid;grid-template-columns:1fr 95px 1fr;align-items:center;gap:14px;margin:20px 0}.node{border:2px solid #2867ae;background:#eaf3ff;padding:20px;min-height:150px}.node.server{background:#efe8ff;border-color:#7652b1}.node p{font-size:14px;margin-bottom:0}.rail{background:#a2adbf;height:4px;position:relative}.rail:after{content:'›';position:absolute;right:0;top:-21px;font-size:30px}.packet{position:absolute;top:-8px;width:18px;height:18px;left:0;background:#ffbd42;border:2px solid #553a05;border-radius:3px}.animate .packet{animation:travel 1s ease-in-out}.reverse .packet{animation-direction:reverse}@keyframes travel{from{left:0}to{left:calc(100% - 18px)}}.controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:14px 0}.result{background:#dff5e9;border-left:5px solid #238153;padding:16px}.result.bad{background:#ffe7ed;border-color:#af2944;color:#72152b}.result strong{font-size:18px}.result p{margin-bottom:0}.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:18px 0}.steps button.active{background:#5133a5;color:#fff;border-color:#5133a5}.caption{font-size:13px;color:#4e586a}table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;vertical-align:top;padding:13px;border-bottom:1px solid #c5cbda}th{background:#e7edff}.table-wrap{overflow:auto}footer{font-size:13px;line-height:1.8;margin-top:24px}footer a{margin-right:16px}:focus-visible{outline:3px solid #a66c00;outline-offset:4px}@media(max-width:680px){.pair{grid-template-columns:1fr}section{padding:18px}.flow{grid-template-columns:1fr 40px 1fr;gap:8px}.node{padding:12px;min-height:175px}.steps{grid-template-columns:1fr 1fr}header{font-size:14px;flex-wrap:wrap}}@media(prefers-reduced-motion:reduce){.animate .packet{animation:none}}
+</style>
+</head>
+<body>
+<header><strong>Tokenlar ve cookieler / Scraping dersi</strong><nav><a href="/">Deney paneli</a> · <a href="jwt-cookie.html">JWT ve cookie dersi</a></nav></header>
+<main>
+<h1>İsteği kim gönderiyor?<br>User-Agent ne söylüyor?</h1>
+<p class="lead"><strong>User-Agent, HTTP isteğindeki bir başlıktır.</strong> İstemci kendisini bu metinle tanıtır: tarayıcı, curl veya bir veri toplama programı. Değeri istemci belirler; sunucuya ulaşması doğru olduğunu kanıtlamaz. <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/User-Agent">MDN</a></p>
+<div class="pair"><div class="concept"><h2>Scraping nedir?</h2><p>Bir sayfanın içeriğini alıp içinden gerekli bilgileri çıkarmaktır. Örneğin kendi ürün sayfandaki ad ve fiyatı HTML'den okuyup tabloya dönüştürmek.</p></div><div class="concept"><h2>User-Agent'ın rolü</h2><p>İçerik alınırken gönderilen isteği tanıtır. HTML ayrıştırma işlemini yapmaz; oturum açmaz; cookie veya token yerine geçmez.</p></div></div>
+<section>
+<h2>1. Başlık metninin parçalarına dokun</h2>
+<p>Bu örnek, tarayıcıya benzeyen bir User-Agent değeridir. Sürüm ve platform bilgileri her zaman ayrıntılı veya doğru olmayabilir.</p>
+<div class="parts" id="parts"><button data-part="0">Mozilla/5.0</button><button data-part="1">(X11; Linux x86_64)</button><button data-part="2">AppleWebKit/537.36</button><button data-part="3">Chrome/140.0.0.0</button><button data-part="4">Safari/537.36</button></div>
+<p id="partText" aria-live="polite"></p>
+<p class="note">Bu metinde “Mozilla” veya “Safari” yazması, isteğin o tarayıcıdan geldiğini tek başına göstermez. UA tespiti taklit ve uyumluluk metinleri yüzünden güvenilmezdir. <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Browser_detection_using_the_user_agent">MDN UA tespiti</a></p>
+</section>
+<section>
+<h2>2. İsteği değiştir, sunucu kararını gör</h2>
+<p>Bu simülasyon, projemizin <code>/protected</code> filtresini gösterir. Seçimleri değiştir; oluşan başlıkları ve beklenen HTTP cevabını karşılaştır.</p>
+<div class="pair"><div>
+<label for="client">İstemcinin gönderdiği User-Agent</label><select id="client"><option value="curl">curl/8.0.0 — varsayılan curl örneği</option><option value="bot">DersBot/1.0 — kendini tanıtan scraper</option><option value="browser">Mozilla/5.0… — tarayıcıya benzeyen değer</option><option value="empty">Başlık yok</option></select>
+<label><input type="checkbox" id="hints"> Sec-CH-UA: "Chromium";v="140" ekle</label>
+<label><input type="checkbox" id="session"> Geçerli demo oturumu gönder</label>
+</div><div><label for="policy">Sunucunun koruması</label><select id="policy"><option value="open">Açık: başlıklara bakma</option><option value="headers" selected>Başlık: User-Agent + Sec-CH-UA</option><option value="session">Oturum: başlık + geçerli oturum</option></select><p id="policyText"></p></div></div>
+<div class="flow" id="flow"><div class="node"><h3>İstemci</h3><p id="clientState"></p></div><div class="rail"><span class="packet"></span></div><div class="node server"><h3>Test sunucusu</h3><p id="serverState"></p></div></div>
+<div class="controls"><button id="play" class="primary">İstek akışını oynat</button></div>
+<div class="steps"><button data-step="0">1. İsteği hazırla</button><button data-step="1">2. Başlıkları gönder</button><button data-step="2">3. Filtreyi uygula</button><button data-step="3">4. Cevabı al</button></div>
+<label id="stepLabel" for="step">Adım 1 / 4</label><input id="step" type="range" min="0" max="3" value="0">
+<pre id="request"></pre><div class="result" id="result" role="status"><strong id="status"></strong><p id="reason"></p></div>
+<p class="caption">Animasyon gerçek ağ isteği göndermez. “Geçerli oturum” seçeneği öğretim amaçlıdır; gerçek bir token üretmez. Seçenekler ana paneldeki koruma modunu değiştirmez.</p>
+</section>
+<section>
+<h2>3. Curl ile aynı fikri dene</h2>
+<p><code>-A</code>, User-Agent başlığını ayarlar. Curlün varsayılan değeri <code>curl/sürüm</code> biçimindedir. <code>-v</code> gönderilen ve alınan başlıkları gösterir. <a href="https://curl.se/docs/manpage.html">curl belgeleri</a></p>
+<h3>Önce varsayılan curl isteği</h3><pre>curl -v http://127.0.0.1:8000/echo</pre>
+<h3>Sonra kendi scraper adınla</h3><pre>curl -v -A 'DersBot/1.0' http://127.0.0.1:8000/echo</pre>
+<h3>Kendi korunan sunucunda başlık taklidi</h3><pre>curl -v http://127.0.0.1:8000/protected \
+  -A 'Mozilla/5.0 Chrome/140.0.0.0' \
+  -H 'Sec-CH-UA: "Chromium";v="140"'</pre>
+<p>Panelde <strong>Başlık</strong> modu seçiliyse son istek 200 alır. <strong>Oturum</strong> modunda ise geçerli cookie veya bearer token eklenmediği için 401 alır. Yalnızca <code>-A</code> kullanırsan bu projenin Sec-CH-UA şartı yüzünden 403 alırsın.</p>
+<p class="note">Tarayıcı User-Agent'ı yazmak, curlü tarayıcıya dönüştürmez. Curl HTML'i alır; varsayılan olarak sayfanın JavaScript'ini çalıştırıp DOM oluşturmaz. <a href="https://curl.se/docs/tutorial.html">curl rehberi</a></p>
+</section>
+<section>
+<h2>4. Scraping akışında UA nerede?</h2>
+<div class="table-wrap"><table><thead><tr><th>İşlem</th><th>Ne olur?</th><th>User-Agent ilişkisi</th></tr></thead><tbody>
+<tr><td>İstek oluşturma</td><td>URL, yöntem ve başlıklar hazırlanır.</td><td>UA burada belirlenir.</td></tr>
+<tr><td>Cevap alma</td><td>Sunucu HTML, JSON veya ret cevabı döndürür.</td><td>UA filtre kararında bir sinyal olabilir.</td></tr>
+<tr><td>Ayrıştırma</td><td>HTML içinden ad, fiyat gibi alanlar seçilir.</td><td>UA veriyi ayrıştırmaz.</td></tr>
+<tr><td>Kaydetme</td><td>Çıkarılan veriler CSV veya veritabanına yazılır.</td><td>UA saklama işlemini yapmaz.</td></tr>
+</tbody></table></div>
+<pre>Örnek HTML: &lt;span class="price"&gt;120 TL&lt;/span&gt;
+Ayrıştırma sonucu: {"fiyat": "120 TL"}</pre>
+</section>
+<section><h2>5. Birbirine karıştırma</h2><ul>
+<li><strong>User-Agent:</strong> istemcinin kendisi hakkında söylediği metin.</li>
+<li><strong>Sec-CH-UA:</strong> destekleyen tarayıcıların marka/sürüm ipucu. Her tarayıcıda aynı değildir; curl de başlık olarak gönderebilir. <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Sec-CH-UA">MDN</a></li>
+<li><strong>Cookie / bearer token:</strong> bu projede sunucunun oturumu doğrulamasını sağlayan değerler.</li>
+<li><strong>Scraping:</strong> içeriği alıp içinden veri çıkarma işi.</li>
+</ul><p>Kendi sunucundaki deneyin sonucu: başlık filtresi curlün varsayılan isteğini engeller. Başlıklar değiştirilebildiği için tek başına bütün scraperları ayırt edemez.</p></section>
+<footer>Kaynaklar: <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/User-Agent">MDN User-Agent</a><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Browser_detection_using_the_user_agent">MDN UA tespiti</a><a href="https://curl.se/docs/manpage.html">curl seçenekleri</a><br>Dosya doğrudan tarayıcıda açılabilir; dış bağımlılık yoktur.</footer>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+const UA = {curl:'curl/8.0.0',bot:'DersBot/1.0',browser:'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/140.0.0.0 Safari/537.36',empty:''};
+const partDescriptions = [
+ 'Mozilla/5.0: tarihsel uyumluluk metni. Güncel Chrome gibi başka tarayıcıların değerlerinde de bulunur; Firefox kanıtı değildir.',
+ '(X11; Linux x86_64): bu örnekte platform ve mimari beyanı. İstemci bunu değiştirebilir; bazı tarayıcılar ayrıntıları azaltır.',
+ 'AppleWebKit/537.36: tarayıcı ailesi/uyumluluk metninin bir parçası. İstemcinin gerçek motorunu güvenilir biçimde kanıtlamaz.',
+ 'Chrome/140.0.0.0: Chrome benzeri ürün ve sürüm beyanı. Buradaki 140 ders için örnektir; güncel sürüm bilgisi değildir.',
+ 'Safari/537.36: bu örnekte uyumluluk metni. Chrome değerinde de bulunur; tek başına Safari kullanıldığını göstermez.'
+];
+document.querySelectorAll('[data-part]').forEach(button => button.addEventListener('click', () => {
+ document.querySelectorAll('[data-part]').forEach(item => { const selected = item === button; item.classList.toggle('active', selected); item.setAttribute('aria-pressed', selected); });
+ $('partText').textContent = partDescriptions[Number(button.dataset.part)];
+}));
+let currentStep = 0, timer = null;
+function verdict() {
+ const policy = $('policy').value, ua = UA[$('client').value];
+ if (policy === 'open') return [200,'Koruma kapalı. User-Agent veya oturum kontrol edilmedi.'];
+ if (!ua.startsWith('Mozilla/5.0') || ua.toLowerCase().includes('curl/')) return [403,'User-Agent filtresi reddetti. Bu projenin kuralı Mozilla/5.0 ile başlayan değeri arar.'];
+ if (!$('hints').checked) return [403,'User-Agent geçti; Chromium/Chrome Sec-CH-UA başlığı eksik.'];
+ if (policy === 'session' && !$('session').checked) return [401,'İki başlık da geçti; geçerli oturum bilgisi yok.'];
+ return [200,policy === 'session' ? 'Başlıklar ve geçerli oturum kabul edildi.' : 'Taklit edilebilir başlıklar filtreyi geçti; oturum kontrolü yapılmadı.'];
+}
+function stop() { clearInterval(timer); timer = null; $('play').textContent = 'İstek akışını oynat'; }
+function render(animate = true) {
+ const ua = UA[$('client').value], [status, reason] = verdict();
+ const lines = ['GET /protected HTTP/1.1','Host: 127.0.0.1:8000'];
+ if (ua) lines.push(`User-Agent: ${ua}`);
+ if ($('hints').checked) lines.push('Sec-CH-UA: "Chromium";v="140"');
+ if ($('session').checked) lines.push('Cookie: lab_session=<geçerli-demo-oturumu>');
+ $('request').textContent = lines.join('\n');
+ $('status').textContent = `Beklenen cevap: HTTP ${status}`; $('reason').textContent = reason;
+ $('result').classList.toggle('bad', status >= 400);
+ $('policyText').textContent = {open:'İstek her zaman kabul edilir.',headers:'Önce User-Agent, ardından Sec-CH-UA kontrol edilir.',session:'Önce iki başlık kontrol edilir; sonra geçerli oturum aranır.'}[$('policy').value];
+ const descriptions = [
+  ['URL ve başlıkları hazırlar.','Henüz istek gelmedi.'],
+  ['Seçtiğin başlıkları sunucuya gönderir.','İstek başlıklarını alır.'],
+  ['Cevabı bekler.','Filtre kararı: ' + reason],
+  [`HTTP ${status} cevabını alır.`,status === 200 ? 'Korunan içeriği döndürür.' : 'İsteği reddeder.']
+ ];
+ $('clientState').textContent = descriptions[currentStep][0]; $('serverState').textContent = descriptions[currentStep][1];
+ $('step').value = currentStep; $('stepLabel').textContent = `Adım ${currentStep + 1} / 4`;
+ document.querySelectorAll('[data-step]').forEach(button => { const active = Number(button.dataset.step) === currentStep; button.classList.toggle('active', active); button.setAttribute('aria-pressed', active); });
+ $('flow').classList.remove('animate','reverse');
+ if (animate && currentStep !== 0) { void $('flow').offsetWidth; $('flow').classList.toggle('reverse', currentStep === 3); $('flow').classList.add('animate'); }
+}
+['client','policy','hints','session'].forEach(id => $(id).addEventListener('change', () => { stop(); currentStep = 0; render(false); }));
+$('step').addEventListener('input', event => { stop(); currentStep = Number(event.target.value); render(); });
+document.querySelectorAll('[data-step]').forEach(button => button.addEventListener('click', () => { stop(); currentStep = Number(button.dataset.step); render(); }));
+$('play').addEventListener('click', () => {
+ if (timer) { stop(); return; }
+ currentStep = 0; render(false); $('play').textContent = 'Animasyonu durdur';
+ timer = setInterval(() => { currentStep++; render(); if (currentStep === 3) stop(); }, 1700);
+});
+document.querySelector('[data-part="0"]').click(); render(false);
+</script>
+</body>
+</html>
